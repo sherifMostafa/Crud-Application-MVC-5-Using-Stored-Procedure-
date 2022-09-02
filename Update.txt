@@ -1,0 +1,44 @@
+USE [AdoExample]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_UpdateProduct]    Script Date: 30-Aug-22 1:19:27 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+create proc [dbo].[sp_UpdateProduct]
+(
+@ProductId int,
+@ProductName nvarchar(50),
+@Price decimal(8,2),
+@Qty int,
+@Remarks nvarchar(50) = null
+)
+as
+begin 
+  declare @RowCount int = 0
+  set @RowCount = (select count(1) from dbo.tbl_ProductMaster where ProductName = @ProductName and ProductId <> @ProductId)
+   begin try
+      begin transaction
+	  if(@RowCount = 0)
+	    begin
+			update dbo.tbl_ProductMaster
+			set  ProductName = @ProductName,
+		       	 Price       = @Price,
+				 Qty         = @Qty ,
+				 Remarks     = @Remarks
+		    where ProductId = @ProductId
+		end
+	  commit transaction
+   end try
+
+   begin catch
+         rollback transaction
+         select ERROR_MESSAGE()
+   end catch
+end
+GO
+
+

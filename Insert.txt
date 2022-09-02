@@ -1,0 +1,39 @@
+USE [AdoExample]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_InsertProducts]    Script Date: 30-Aug-22 1:19:15 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE proc [dbo].[sp_InsertProducts]
+(
+@ProductName nvarchar(50),
+@Price decimal(8,2),
+@Qty int,
+@Remarks nvarchar(50) = null
+)
+as
+begin 
+  declare @RowCount int = 0
+  set @RowCount = (select count(1) from dbo.tbl_ProductMaster where ProductName = @ProductName)
+   begin try
+      begin transaction
+	  if(@RowCount = 0)
+	    begin
+			insert into dbo.tbl_ProductMaster(ProductName,Price,Qty,Remarks)
+			values(@ProductName,@Price,@Qty,@Remarks)
+		end
+	  commit transaction
+   end try
+
+   begin catch
+         rollback transaction
+         select ERROR_MESSAGE()
+   end catch
+end
+GO
+
+

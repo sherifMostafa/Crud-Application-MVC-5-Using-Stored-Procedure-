@@ -1,0 +1,42 @@
+USE [AdoExample]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_GetAllProducts]    Script Date: 30-Aug-22 1:18:27 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+create procedure [dbo].[sp_GetAllProducts]
+as 
+begin 
+
+   select ProductId,ProductName,price,Qty,Remarks from dbo.tbl_ProductMaster with(nolock)
+
+end
+GO
+
+
+------------------------
+
+USE [AdoExample]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_GetProductById]    Script Date: 30-Aug-22 1:18:45 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE proc [dbo].[sp_GetProductById](@ProductId int)
+as 
+begin
+	select ProductId,ProductName,Price,Qty,Remarks 
+	from dbo.tbl_ProductMaster
+	where ProductId = @ProductId
+end
+GO
+
+

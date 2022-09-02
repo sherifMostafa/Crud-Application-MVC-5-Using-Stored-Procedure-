@@ -1,0 +1,47 @@
+USE [AdoExample]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_DeleteProduct]    Script Date: 30-Aug-22 1:19:42 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE proc [dbo].[sp_DeleteProduct]
+(
+  @ProductId int,
+  @ReturnMessage varchar(50) output
+)
+as 
+begin
+    declare @rowcount int = 0
+
+    begin try
+	set @rowcount = (select count(1) from dbo.tbl_ProductMaster where ProductId = @ProductId)
+		if(@rowcount > 0)
+			begin
+			  begin transaction 
+				Delete from dbo.tbl_ProductMaster 
+				where ProductId = @ProductId
+
+				set @ReturnMessage = 'Product Deleted Successfully !!!'
+			  commit transaction
+			end
+		else
+		    begin
+			set @ReturnMessage = 'Prodcut not available with id '+ CONVERT(varchar , @ProductId) 
+			end
+	 
+	
+	end try
+
+	begin catch
+	rollback tran
+	set @ReturnMessage = ERROR_MESSAGE()
+	end catch 
+
+end
+GO
+
+
